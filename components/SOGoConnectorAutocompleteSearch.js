@@ -385,13 +385,13 @@ SOGoConnectorAutocompleteSearch.prototype = {
                                       aPreviousResult, aListener) {
         let result = new SOGoConnectorAutocompleteResult(aSearchString);
 
-        let prefSvc = Components.classes["@mozilla.org/preferences-service;1"]
-                                .getService(Components.interfaces.nsIPrefBranch);
+        //let prefSvc = Components.classes["@mozilla.org/preferences-service;1"]
+        //                        .getService(Components.interfaces.nsIPrefBranch);
 
         // Find out about the comment column
         if (!commentColumn) {
             try {
-                commentColumn = prefSvc.getCharPref("sogo-connector.autoComplete.commentAttribute");
+                commentColumn = Services.prefs.getCharPref("sogo-connector.autoComplete.commentAttribute");
                 if (!commentColumn || commentColumn.length == 0) {
                     commentColumn = "none";
                 }
@@ -512,7 +512,7 @@ SOGoConnectorAutocompleteSearch.prototype = {
     contractID: "@mozilla.org/autocomplete/search;1?name=addrbook-sogo-connector",
     classDescription: "Class description",
     classID: Components.ID("{688f57fc-2ac6-42df-38b1-8df9f4bafed4}"),
-    implementationLanguage: Components.interfaces.nsIProgrammingLanguage.JAVASCRIPT,
+    //implementationLanguage: Components.interfaces.nsIProgrammingLanguage.JAVASCRIPT,
     flags: 0,
 
     // nsISupports

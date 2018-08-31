@@ -18,6 +18,8 @@
  * Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+Components.utils.import("resource://gre/modules/Services.jsm");
+
 function jsInclude(files, target) {
     let loader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"]
                            .getService(Components.interfaces.mozIJSSubScriptLoader);
@@ -103,25 +105,24 @@ function SCUnloadHandler(event) {
 }
 
 function cleanupAddressBooks() {
-    let prefs = Components.classes["@mozilla.org/preferences-service;1"]
-                          .getService(Components.interfaces.nsIPrefBranch);
+    //let prefs = Components.classes["@mozilla.org/preferences-service;1"]
+    //                      .getService(Components.interfaces.nsIPrefBranch);
 
     // 	_cleanupLocalStore();
-    let uniqueChildren = _uniqueChildren(prefs, "ldap_2.servers", 2);
-    _cleanupABRemains(prefs, uniqueChildren);
-    uniqueChildren = _uniqueChildren(prefs, "ldap_2.servers", 2);
-    _cleanupBogusAB(prefs, uniqueChildren);
+    let uniqueChildren = _uniqueChildren("ldap_2.servers", 2);
+    _cleanupABRemains(uniqueChildren);
+    uniqueChildren = _uniqueChildren("ldap_2.servers", 2);
+    _cleanupBogusAB(uniqueChildren);
 
-    uniqueChildren = _uniqueChildren(prefs,
-                                     "extensions.ca.inverse.addressbook.groupdav.ldap_2.servers",
+    uniqueChildren = _uniqueChildren("extensions.ca.inverse.addressbook.groupdav.ldap_2.servers",
                                      7);
-    _cleanupOrphanDAVAB(prefs, uniqueChildren);
-    _migrateOldCardDAVDirs(prefs, uniqueChildren);
+    _cleanupOrphanDAVAB(uniqueChildren);
+    _migrateOldCardDAVDirs(uniqueChildren);
 }
 
-function _uniqueChildren(prefs, path, dots) {
+function _uniqueChildren(path, dots) {
     let count = {};
-    let children = prefs.getChildList(path, count);
+    let children = Services.prefs.getChildList(path, count);
     let uniqueChildren = {};
     for (let i = 0; i < children.length; i++) {
         let leaves = children[i].split(".");
@@ -131,21 +132,21 @@ function _uniqueChildren(prefs, path, dots) {
     return uniqueChildren;
 }
 
-function _cleanupABRemains(prefs, uniqueChildren) {
+function _cleanupABRemains(uniqueChildren) {
     let path = "ldap_2.servers";
 
     for (let key in uniqueChildren) {
         let branchRef = path + "." + key;
         let count = {};
-        let children = prefs.getChildList(branchRef, count);
+        let children = Services.prefs.getChildList(branchRef, count);
         if (children.length < 2) {
             if (children[0] == (branchRef + ".position"))
-                prefs.deleteBranch(branchRef);
+                Services.prefs.deleteBranch(branchRef);
         }
     }
 }
 
-function _cleanupBogusAB(prefs, uniqueChildren) {
+function _cleanupBogusAB(uniqueChildren) {
     let path = "ldap_2.servers";
 
     for (let key in uniqueChildren) {
@@ -154,10 +155,10 @@ function _cleanupBogusAB(prefs, uniqueChildren) {
             let uri = null;
             // 			dump("trying: " + uriRef + "\n");
             try {
-                uri = prefs.getCharPref(uriRef);
+                uri = Services.prefs.getCharPref(uriRef);
                 if (uri.indexOf("moz-abldapdirectory:") == 0) {
                     dump("deleting: " + path + "." + key + "\n");
-                    prefs.deleteBranch(path + "." + key);
+                    Services.prefs.deleteBranch(path + "." + key);
                     // 			dump("uri: " + uri + "\n");
                 }
             }
@@ -166,42 +167,42 @@ function _cleanupBogusAB(prefs, uniqueChildren) {
     }
 }
 
-function _cleanupOrphanDAVAB(prefs, uniqueChildren) {
+function _cleanupOrphanDAVAB(uniqueChildren) {
     var	path = "extensions.ca.inverse.addressbook.groupdav.ldap_2.servers";
     for (let key in uniqueChildren) {
         let otherRef = "ldap_2.servers." + key + ".description";
         // 		dump("XXXX otherRef: " + otherRef + "\n");
         try {
-            prefs.getCharPref(otherRef);
+            Services.prefs.getCharPref(otherRef);
         }
         catch(e) {
             // 			dump("exception: " + e + "\n");
             dump("deleting orphan: " + path + "." + key + "\n");
-            prefs.deleteBranch(path + "." + key);
+            Services.prefs.deleteBranch(path + "." + key);
         }
     }
 }
 
-function _migrateOldCardDAVDirs(prefs, uniqueChildren) {
+function _migrateOldCardDAVDirs(uniqueChildren) {
     var	path = "extensions.ca.inverse.addressbook.groupdav.ldap_2.servers.";
     for (let key in uniqueChildren) {
         let fullPath = path + key;
         try {
-            let isCardDAV = (prefs.getCharPref(fullPath + ".readOnly") == "true");
+            let isCardDAV = (Services.prefs.getCharPref(fullPath + ".readOnly") == "true");
             if (isCardDAV) {
                 dump("######### trying to migrate " + key + "\n");
-                let description = "" + prefs.getCharPref(fullPath + ".name");
-                let url = "" + prefs.getCharPref(fullPath + ".url");
+                let description = "" + Services.prefs.getCharPref(fullPath + ".name");
+                let url = "" + Services.prefs.getCharPref(fullPath + ".url");
                 dump("description: " + description + "\n");
                 dump("url: " + url + "\n");
                 if (description.length > 0
                     && url.length > 0) {
                     try {
-                        prefs.deleteBranch(fullPath);
+                        Services.prefs.deleteBranch(fullPath);
                     }
                     catch(x) {};
                     try {
-                        prefs.deleteBranch("ldap_2.servers." + key);
+                        Services.prefs.deleteBranch("ldap_2.servers." + key);
                     }
                     catch(y) {};
                     SCCreateCardDAVDirectory(description, url);

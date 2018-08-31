@@ -18,6 +18,8 @@
  * Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+Components.utils.import("resource://gre/modules/Services.jsm");
+
 function jsInclude(files, target) {
     let loader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"]
                            .getService(Components.interfaces.mozIJSSubScriptLoader);
@@ -77,11 +79,11 @@ function isCardDavDirectory(abURI){
     if (abURI
         && abURI.search("mab/MailList") == -1
         && abURI.search(abdavPrefix) == 0) {
-        let prefs = Components.classes["@mozilla.org/preferences-service;1"]
-                              .getService(Components.interfaces.nsIPrefBranch);
+        //let prefs = Components.classes["@mozilla.org/preferences-service;1"]
+        //                      .getService(Components.interfaces.nsIPrefBranch);
         let prefName = abURI.substr(abdavPrefix.length);
         try {
-            let uri = prefs.getCharPref(prefName + ".uri");
+            let uri = Services.prefs.getCharPref(prefName + ".uri");
             value = (uri.search("carddav") == 0);
         }
         catch(e) {
@@ -108,13 +110,13 @@ function GroupdavPreferenceService(uniqueId) {
         throw new Components.Exception("GroupdavPreferenceService exception: Missing uniqueId");
     }
 
-    this.mPreferencesService = Components.classes["@mozilla.org/preferences-service;1"]
-                                         .getService(Components.interfaces.nsIPrefBranch);
+    //this.mPreferencesService = Components.classes["@mozilla.org/preferences-service;1"]
+    //                                     .getService(Components.interfaces.nsIPrefBranch);
     this.prefPath = "extensions.ca.inverse.addressbook.groupdav." + uniqueId + ".";
 }
 
 GroupdavPreferenceService.prototype = {
-    mPreferencesService: null,
+    //mPreferencesService: null,
     prefPath: null,
 
     _getPref: function GdPSvc__getPref(prefName) {
@@ -123,10 +125,10 @@ GroupdavPreferenceService.prototype = {
         // 		dump("getPref: " + this.prefPath + prefName + "\n");
 
         try {
-            value = this.mPreferencesService.getCharPref(this.prefPath + prefName);
+            value = Services.prefs.getCharPref(this.prefPath + prefName);
         }
         catch(e) {
-          dump("Exception getting pref '" + this.prefPath + prefName + "': \n" + e + " (" + e.lineNumber + ") - ignoring...\n");
+          //dump("Exception getting pref '" + this.prefPath + prefName + "': \n" + e + " (" + e.lineNumber + ") - ignoring...\n");
           // dump("  stack:\n" + backtrace() + "\n");
           //throw("unacceptable condition: " + e);
         }
@@ -140,8 +142,7 @@ GroupdavPreferenceService.prototype = {
         // 		dump("getPref: " + this.prefPath + prefName + "\n");
 
         try {
-            let newValue = this.mPreferencesService
-                               .getCharPref(this.prefPath + prefName);
+            let newValue = Services.prefs.getCharPref(this.prefPath + prefName);
             if (newValue)
                 value = newValue;
         }
@@ -153,7 +154,7 @@ GroupdavPreferenceService.prototype = {
     _setPref: function GdPSvc__setPref(prefName, value) {
         // 		dump("setPref: " + this.prefPath + prefName + " to: " + value + "\n");
         try {
-            this.mPreferencesService.setCharPref(this.prefPath + prefName, value);
+            Services.prefs.setCharPref(this.prefPath + prefName, value);
         }
         catch(e) {
             // 			dump("exception setting pref '" + this.prefPath + prefName + "' to value '"
@@ -296,8 +297,8 @@ function GroupDAVListAttributes(uri) {
     let uniqueID = (ab.dirPrefId.substr(prefPrefix.length)
                       .replace("_", "", "g")
                     + "_" + uriParts[3].replace("_", "", "g"));
-    this.mPrefs = Components.classes["@mozilla.org/preferences-service;1"]
-                            .getService(Components.interfaces.nsIPrefBranch);
+    //this.mPrefs = Components.classes["@mozilla.org/preferences-service;1"]
+    //                        .getService(Components.interfaces.nsIPrefBranch);
     this.prefPath = "extensions.ca.inverse.addressbook.groupdav." + uniqueID;
     // dump("*** list: " + this.prefPath + "\n");
 }
@@ -306,7 +307,7 @@ GroupDAVListAttributes.prototype = {
     _getCharPref: function(key) {
         let value;
         try {
-            value = this.mPrefs.getCharPref(this.prefPath + "." + key);
+            value = Services.prefs.getCharPref(this.prefPath + "." + key);
         }
         catch(e) {
             value = null;
@@ -317,7 +318,7 @@ GroupDAVListAttributes.prototype = {
     },
     _setCharPref: function(key, value) {
         // dump("new " + key + ": " + value + "\n");
-        this.mPrefs.setCharPref(this.prefPath + "." + key, value);
+        Services.prefs.setCharPref(this.prefPath + "." + key, value);
     },
 
     get key() {
@@ -336,7 +337,7 @@ GroupDAVListAttributes.prototype = {
 
     deleteRecord: function() {
         try {
-            this.mPrefs.deleteBranch(this.prefPath);
+            Services.prefs.deleteBranch(this.prefPath);
         }
         catch(e) {};
     }

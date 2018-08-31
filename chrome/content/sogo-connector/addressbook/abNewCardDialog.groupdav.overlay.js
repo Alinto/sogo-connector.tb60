@@ -19,20 +19,20 @@
  * Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-// function jsInclude(files, target) {
-//     let loader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"]
-//                            .getService(Components.interfaces.mozIJSSubScriptLoader);
-//     for (let i = 0; i < files.length; i++) {
-//         try {
-//             loader.loadSubScript(files[i], target);
-//         }
-//         catch(e) {
-//             dump("abNewCardDialog.groupdav.overlay.js: failed to include '" + files[i] + "'\n" + e + "\n");
-//         }
-//     }
-// }
+function jsInclude(files, target) {
+     let loader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"]
+                            .getService(Components.interfaces.mozIJSSubScriptLoader);
+     for (let i = 0; i < files.length; i++) {
+         try {
+             loader.loadSubScript(files[i], target);
+         }
+         catch(e) {
+             dump("abNewCardDialog.groupdav.overlay.js: failed to include '" + files[i] + "'\n" + e + "\n");
+         }
+     }
+}
 
-// jsInclude(["chrome://sogo-connector/content/addressbook/cardedit-overlay-common.js"]);
+jsInclude(["chrome://sogo-connector/content/addressbook/common-card-overlay.js"]);
 
 function OnLoadHandler() {
     this.OldNewCardOKButton = this.NewCardOKButton;

@@ -1,11 +1,13 @@
+Components.utils.import("resource://gre/modules/Services.jsm");
+
 let SCContactCategories = {
     getCategoriesAsString: function SCCC_getCategoriesAsString() {
         let cats = null;
 
-        let prefService = Components.classes["@mozilla.org/preferences-service;1"]
-                                    .getService(Components.interfaces.nsIPrefBranch);
+        //let prefService = Components.classes["@mozilla.org/preferences-service;1"]
+        //                            .getService(Components.interfaces.nsIPrefBranch);
         try {
-            cats = prefService.getCharPref("sogo-connector.contacts.categories");
+            cats = Services.prefs.getCharPref("sogo-connector.contacts.categories");
             cats = decodeURIComponent(escape(cats));
         }
         catch(e) {
@@ -19,9 +21,9 @@ let SCContactCategories = {
     },
 
     setCategoriesAsString: function SCCC_setCategoriesAsString(cats) {
-        let prefService = Components.classes["@mozilla.org/preferences-service;1"]
-                                    .getService(Components.interfaces.nsIPrefBranch);
-        prefService.setCharPref("sogo-connector.contacts.categories", unescape(encodeURIComponent(cats)));
+        //let prefService = Components.classes["@mozilla.org/preferences-service;1"]
+        //                            .getService(Components.interfaces.nsIPrefBranch);
+        Services.prefs.setCharPref("sogo-connector.contacts.categories", unescape(encodeURIComponent(cats)));
     },
 
     getCategoriesAsArray: function SCCC_getCategoriesAsArray() {

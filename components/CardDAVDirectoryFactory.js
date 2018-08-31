@@ -20,6 +20,7 @@
 
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("resource://gre/modules/Services.jsm");
+Components.utils.import("resource:///modules/mailServices.js");
 
 //class constructor
 function CardDAVDirectoryFactory() {
@@ -43,7 +44,7 @@ CardDAVDirectoryFactory.prototype = {
     getHelperForLanguage: function cDACLM_getHelperForLanguage(language) {
         return null;
     },
-    implementationLanguage: Components.interfaces.nsIProgrammingLanguage.JAVASCRIPT,
+    //implementationLanguage: Components.interfaces.nsIProgrammingLanguage.JAVASCRIPT,
     flags: 0,
 
     /* nsIAbDirFactory */
@@ -55,9 +56,10 @@ CardDAVDirectoryFactory.prototype = {
 
         let baseArray = Components.classes["@mozilla.org/array;1"]
                                   .createInstance(Components.interfaces.nsIMutableArray);
-        let abManager = Components.classes["@mozilla.org/abmanager;1"]
-                                  .getService(Components.interfaces.nsIAbManager);
-        let directory = abManager.getDirectory("moz-abdavdirectory://" + aPrefId);
+        //let abManager = Components.classes["@mozilla.org/abmanager;1"]
+        //                          .getService(Components.interfaces.nsIAbManager);
+        //let directory = abManager.getDirectory("moz-abdavdirectory://" + aPrefId);
+        let directory = MailServices.ab.getDirectory("moz-abdavdirectory://" + aPrefId);
         baseArray.appendElement(directory, false);
         let directoryEnum = baseArray.enumerate();
 

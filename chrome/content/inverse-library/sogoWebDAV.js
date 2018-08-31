@@ -17,6 +17,7 @@
  */
 
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
+Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://calendar/modules/calProviderUtils.jsm");
 
 function jsInclude(files, target) {
@@ -152,9 +153,9 @@ sogoWebDAV.prototype = {
     QueryInterface: XPCOMUtils.generateQI([Components.interfaces.nsIInterfaceRequestor]),
 
     _makeURI: function _makeURI(url) {
-        var ioSvc = Components.classes["@mozilla.org/network/io-service;1"].
-            getService(Components.interfaces.nsIIOService);
-        return ioSvc.newURI(url, null, null);
+      //var ioSvc = Components.classes["@mozilla.org/network/io-service;1"].
+      //      getService(Components.interfaces.nsIIOService);
+      return Services.io.newURI(url, null, null);
     },
 
     // See: http://mxr.mozilla.org/comm-central/source/calendar/base/modules/calProviderUtils.jsm
@@ -169,9 +170,9 @@ sogoWebDAV.prototype = {
     },
 
     _sendHTTPRequest: function(method, body, headers) {
-        let IOService = Components.classes["@mozilla.org/network/io-service;1"]
-                                  .getService(Components.interfaces.nsIIOService2);
-        let channel = IOService.newChannelFromURI(this._makeURI(this.url));
+        //let IOService = Components.classes["@mozilla.org/network/io-service;1"]
+        //                          .getService(Components.interfaces.nsIIOService2);
+        let channel = Services.io.newChannelFromURI(this._makeURI(this.url));
         let httpChannel = channel.QueryInterface(Components.interfaces.nsIHttpChannel);
         httpChannel.loadFlags |= Components.interfaces.nsIRequest.LOAD_BYPASS_CACHE;
         httpChannel.notificationCallbacks = this;

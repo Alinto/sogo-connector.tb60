@@ -43,7 +43,7 @@ NotificationManager.prototype = {
     getHelperForLanguage: function cDACLM_getHelperForLanguage(language) {
         return null;
     },
-    implementationLanguage: Components.interfaces.nsIProgrammingLanguage.JAVASCRIPT,
+    //implementationLanguage: Components.interfaces.nsIProgrammingLanguage.JAVASCRIPT,
     flags: 0,
 
     /* Components.interfaces.inverseIJSNotificationManager */

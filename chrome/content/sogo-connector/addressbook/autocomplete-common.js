@@ -1,9 +1,11 @@
+Components.utils.import("resource://gre/modules/Preferences.jsm");
+
 function SCACLoad() {
-    let prefService = Components.classes["@mozilla.org/preferences-service;1"]
-                                .getService(Components.interfaces.nsIPrefBranch);
+    //let prefService = Components.classes["@mozilla.org/preferences-service;1"]
+    //                            .getService(Components.interfaces.nsIPrefBranch);
     let delay = 0;
     try {
-        delay = parseInt(prefService.getIntPref("sogo-connector.autoComplete.delay"));
+        delay = parseInt(Preferences.getIntPref("sogo-connector.autoComplete.delay"));
     }
     catch(e) {};
 

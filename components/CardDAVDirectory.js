@@ -149,10 +149,10 @@ CardDAVDirectory.prototype = {
             let oldValue = this.mDescription;
             this.mDescription = String(val);
             let prefName = this.mDirPrefId;
-            let service = Components.classes["@mozilla.org/preferences-service;1"]
-                                    .getService(Components.interfaces.nsIPrefService);
+            //let service = Components.classes["@mozilla.org/preferences-service;1"]
+            //                        .getService(Components.interfaces.nsIPrefService);
             try {
-                let branch = service.getBranch(prefName + ".");
+                let branch = Services.prefs.getBranch(prefName + ".");
                 branch.setCharPref("description", this.mDescription);
             }
             catch(e) {
@@ -327,10 +327,10 @@ CardDAVDirectory.prototype = {
 
     _load: function() {
         let prefName = this.mDirPrefId;
-        let service = Components.classes["@mozilla.org/preferences-service;1"]
-                                .getService(Components.interfaces.nsIPrefService);
+        //let service = Components.classes["@mozilla.org/preferences-service;1"]
+        //                        .getService(Components.interfaces.nsIPrefService);
         try {
-            let branch = service.getBranch(prefName + ".");
+            let branch = Services.prefs.getBranch(prefName + ".");
             this.mDescription = branch.getCharPref("description");
             let uri = branch.getCharPref("uri");
 
@@ -388,11 +388,11 @@ CardDAVDirectory.prototype = {
     useForAutocomplete: function(aIdentityKey) {
         let rc = false;
 
-        let prefs = Components.classes["@mozilla.org/preferences-service;1"]
-                              .getService(Components.interfaces.nsIPrefBranch);
+        //let prefs = Components.classes["@mozilla.org/preferences-service;1"]
+        //                      .getService(Components.interfaces.nsIPrefBranch);
         try {
-            let autocompleteLdap = prefs.getBoolPref("ldap_2.autoComplete.useDirectory");
-            let autocompleteDirectory = prefs.getCharPref("ldap_2.autoComplete.directoryServer");
+            let autocompleteLdap = Services.prefs.getBoolPref("ldap_2.autoComplete.useDirectory");
+            let autocompleteDirectory = Services.prefs.getCharPref("ldap_2.autoComplete.directoryServer");
             rc = (autocompleteDirectory == this.mDirPrefId);
         }
         catch(e) {}
@@ -539,21 +539,21 @@ CardDAVDirectory.prototype = {
     contractID: "@mozilla.org/addressbook/directory;1?type=moz-abdavdirectory",
     classDescription: "Class description",
     classID: Components.ID("{2e3aa298-a1f9-4aef-9f80-ca430ce6e55b}"),
-    implementationLanguage: Components.interfaces.nsIProgrammingLanguage.JAVASCRIPT,
+    //implementationLanguage: Components.interfaces.nsIProgrammingLanguage.JAVASCRIPT,
     flags: 0,
 
     /* nsISupports */
-    QueryInterface: function(aIID) {
-        if (!aIID.equals(Components.interfaces.nsIAbDirectory)
-            && !aIID.equals(Components.interfaces.nsISecurityCheckedComponent)
-            && !aIID.equals(Components.interfaces.nsIClassInfo)
-            && !aIID.equals(Components.interfaces.nsISupports)) {
-            dump("CardDAVDirectory.js: NO INTERFACE: "  + aIID + "\n");
-            throw Components.results.NS_ERROR_NO_INTERFACE;
-        }
-
-        return this;
-    },
+    //QueryInterface: function(aIID) {
+    //    if (!aIID.equals(Components.interfaces.nsIAbDirectory)
+    //        && !aIID.equals(Components.interfaces.nsISecurityCheckedComponent)
+    //        && !aIID.equals(Components.interfaces.nsIClassInfo)
+    //        && !aIID.equals(Components.interfaces.nsISupports)) {
+    //        dump("CardDAVDirectory.js: NO INTERFACE: "  + aIID + "\n");
+    //        throw Components.results.NS_ERROR_NO_INTERFACE;
+    //    }
+    //    return this;
+    //},
+    QueryInterface: XPCOMUtils.generateQI([Components.interfaces.CardDAVDirectory]),
 
     /* additional */
     get serverURL() { 

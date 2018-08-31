@@ -18,6 +18,8 @@
  * Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+Components.utils.import("resource://gre/modules/Services.jsm");
+
 function jsInclude(files, target) {
     let loader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"]
                            .getService(Components.interfaces.mozIJSSubScriptLoader);
@@ -63,9 +65,9 @@ function SCCreateGroupDAVDirectory(description, url) {
     let groupdavPrefService = new GroupdavPreferenceService(prefId);
     groupdavPrefService.setURL(url);
 
-    let prefService = Components.classes["@mozilla.org/preferences-service;1"]
-                                .getService(Components.interfaces.nsIPrefBranch);
-    let filename = prefService.getCharPref(prefId + ".filename");
+    //let prefService = Components.classes["@mozilla.org/preferences-service;1"]
+    //                            .getService(Components.interfaces.nsIPrefBranch);
+    let filename = Services.prefs.getCharPref(prefId + ".filename");
 
     return SCGetDirectoryFromURI("moz-abmdbdirectory://" + filename);
 }
@@ -95,29 +97,29 @@ function SCDeleteDirectory(directory) {
                   + "\n\n Stack:\n\n" + e.stack);
     }
 
-    let prefService = Components.classes["@mozilla.org/preferences-service;1"]
-                                .getService(Components.interfaces.nsIPrefBranch);
+    //let prefService = Components.classes["@mozilla.org/preferences-service;1"]
+    //                            .getService(Components.interfaces.nsIPrefBranch);
     let prefBranch = directory.dirPrefId;
     dump("  dirPrefId: "  + prefBranch + "\n");
-    prefService.deleteBranch(prefBranch + ".position");
+    Services.prefs.deleteBranch(prefBranch + ".position");
 
     let clearPrefsRequired = false;
     try {
         clearPrefsRequired
-            = (prefService.getCharPref("mail.collect_addressbook") == abURI
-               && (prefService.getBoolPref("mail.collect_email_address_outgoing")
-                   || prefService.getBoolPref("mail.collect_email_address_incoming")
-                   || prefService.getBoolPref("mail.collect_email_address_newsgroup")));
+            = (Services.prefs.getCharPref("mail.collect_addressbook") == abURI
+               && (Services.prefs.getBoolPref("mail.collect_email_address_outgoing")
+                   || Services.prefs.getBoolPref("mail.collect_email_address_incoming")
+                   || Services.prefs.getBoolPref("mail.collect_email_address_newsgroup")));
    }
    catch(e) {
         dump("Exception occured in SCDeleteDirectory() - " + e);
    }
 
    if (clearPrefsRequired) {
-        prefService.setBoolPref("mail.collect_email_address_outgoing", false);
-        prefService.setBoolPref("mail.collect_email_address_incoming", false);
-        prefService.setBoolPref("mail.collect_email_address_newsgroup", false);
-        prefService.setCharPref("mail.collect_addressbook",	"moz-abmdbdirectory://abook.mab");
+        Services.prefs.setBoolPref("mail.collect_email_address_outgoing", false);
+        Services.prefs.setBoolPref("mail.collect_email_address_incoming", false);
+        Services.prefs.setBoolPref("mail.collect_email_address_newsgroup", false);
+        Services.prefs.setCharPref("mail.collect_addressbook",	"moz-abmdbdirectory://abook.mab");
     }
 
     dump("  deleted done\n");
@@ -139,11 +141,11 @@ function SCDeleteDAVDirectory(uri) {
             try {
                 SCDeleteDirectory(directory);
                 let prefBranch = directory.dirPrefId;
-                let prefService = Components.classes["@mozilla.org/preferences-service;1"]
-                                            .getService(Components.interfaces.nsIPrefBranch);
+                //let prefService = Components.classes["@mozilla.org/preferences-service;1"]
+                //                            .getService(Components.interfaces.nsIPrefBranch);
                 /* groupdav = moz-abmdbdirectory, carddav = moz-abdavdirectory */
                 if (uri.indexOf("moz-abmdbdirectory://") == 0)
-                    prefService.deleteBranch("extensions.ca.inverse.addressbook.groupdav."
+                    Services.prefs.deleteBranch("extensions.ca.inverse.addressbook.groupdav."
                                              + prefBranch);
 
                 result = true;

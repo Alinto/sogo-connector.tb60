@@ -58,6 +58,39 @@ jsInclude(["chrome://inverse-library/content/calendar-cache.js"]);
 
 
 /* helpers */
+function doQueryInterface(aSelf, aProto, aIID, aList, aClassInfo) {
+    if (aClassInfo) {
+        if (aIID.equals(Components.interfaces.nsIClassInfo)) {
+            return aClassInfo;
+        }
+        if (!aList) {
+            aList = aClassInfo.getInterfaces({});
+        }
+    }
+
+    if (aList) {
+        for (let iid of aList) {
+            if (aIID.equals(iid)) {
+                return aSelf;
+            }
+        }
+    }
+
+    if (aIID.equals(Components.interfaces.nsISupports)) {
+        return aSelf;
+    }
+
+    if (aProto) {
+        let base = aProto.__proto__;
+        if (base && base.QueryInterface) {
+            // Try to QI the base prototype
+            return base.QueryInterface.call(aSelf, aIID);
+        }
+    }
+
+    throw Components.results.NS_ERROR_NO_INTERFACE;
+}
+
 function fixURL(url) {
     if (!url) {
         dump("fixURL: no URL! - backtrace\n" + STACK());
@@ -104,7 +137,7 @@ CalDAVACLOfflineManager.prototype = {
      */
 
     initDB: function CalDAVACLOfflineManage_initDB() {
-        let dbFile = cal.getCalendarDirectory();
+        let dbFile = cal.provider.getCalendarDirectory();
         dbFile.append("caldav-acl.sqlite");
         this.mDB = Services.storage.openDatabase(dbFile);
         dump("this.mDB = " + this.mDB + "\n");
@@ -572,7 +605,7 @@ CalDAVACLManager.prototype = {
     getHelperForLanguage: function cDACLM_getHelperForLanguage(language) {
         return null;
     },
-    implementationLanguage: Components.interfaces.nsIProgrammingLanguage.JAVASCRIPT,
+    //implementationLanguage: Components.interfaces.nsIProgrammingLanguage.JAVASCRIPT,
     flags: Components.interfaces.nsIClassInfo.SINGLETON,
 
     /* default entries */
@@ -588,9 +621,9 @@ CalDAVACLManager.prototype = {
     pendingItemOperations: null,
 
     get isOffline() {
-	var iOService = Components.classes["@mozilla.org/network/io-service;1"]
-            .getService(Components.interfaces.nsIIOService);
-	return iOService.offline;
+	//var iOService = Components.classes["@mozilla.org/network/io-service;1"]
+        //    .getService(Components.interfaces.nsIIOService);
+	return Services.io.offline;
     },
 
     getCalendarEntry: function cDACLM_getCalendarEntry(calendar, listener) {
@@ -938,10 +971,14 @@ CalDAVACLManager.prototype = {
                     if (subnodes[i].nodeType
                         == Components.interfaces.nsIDOMNode.ELEMENT_NODE) {
                         let value = subnodes[i].childNodes[0].nodeValue;
+                        //dump("value = " + value + "\n");
                         if (value.indexOf("/") == 0) {
-                            let clone = data["calendar"].uri.clone();
-                            clone.path = value;
-                            address = clone.spec;
+                            dump("about to clone uri: " + data["calendar"].uri + "\n");
+                            //let clone = data["calendar"].uri.clone();
+                            //dump("close.spec = " +  clone.spec + "\n");
+                            //clone.path = value;
+                            //address = clone.spec;
+                            address = data["calendar"].uri.prePath + value;
                         }
                         else
                             address = value;
@@ -958,9 +995,10 @@ CalDAVACLManager.prototype = {
                             let owner;
                             let value = subnodes[i].childNodes[0].nodeValue;
                             if (value.indexOf("/") == 0) {
-                                let clone = data["calendar"].uri.clone();
-                                clone.path = value;
-                                owner = clone.spec;
+                                //let clone = data["calendar"].uri.clone();
+                                //clone.path = value;
+                                //owner = clone.spec;
+                                owner = data["calendar"].uri.prePath + value;
                             }
                             else
                                 owner = value;
@@ -1012,9 +1050,10 @@ CalDAVACLManager.prototype = {
             for (let i = 0; i < hrefs.length; i++) {
                 let href = "" + hrefs[i].childNodes[0].nodeValue;
                 if (href.indexOf("/") == 0) {
-                    let clone = data.calendar.uri.clone();
-                    clone.path = href;
-                    href = clone.spec;
+                    //let clone = data.calendar.uri.clone();
+                    //clone.path = href;
+                    //href = clone.spec;
+                    href = data.calendar.uri.prePath + href;
                 }
 
                 let fixedURL = fixURL(href);
@@ -1179,7 +1218,7 @@ CalDAVACLManager.prototype = {
             newIdentity = Components.classes["@mozilla.org/messenger/identity;1"]
                                     .createInstance(Components.interfaces.nsIMsgIdentity);
             newIdentity.key = "caldav_" + this.identityCount;
-            newIdentity.identityName = String(displayName + " <" + email + ">");
+            //newIdentity.identityName = String(displayName + " <" + email + ">");
             newIdentity.fullName = String(displayName);
             newIdentity.email = String(email);
             // dump("added for " + email + ": " + newIdentity + "\n");
@@ -1207,9 +1246,10 @@ CalDAVACLManager.prototype = {
                     let value = "" + childNodes[j].childNodes[0].nodeValue;
                     let address;
                     if (value.indexOf("/") == 0) {
-                        let clone = calendar.uri.clone();
-                        clone.path = value;
-                        address = "" + clone.spec;
+                        //let clone = calendar.uri.clone();
+                        //clone.path = value;
+                        //address = "" + clone.spec;
+                        address = calendar.uri.prePath + value;
                     }
                     else
                         address = value;
@@ -1261,10 +1301,10 @@ CalDAVACLManager.prototype = {
     },
 
     xmlRequest: function cDACLM_xmlRequest(url, method, body, headers, data, synchronous) {
-	var iOService = Components.classes["@mozilla.org/network/io-service;1"]
-            .getService(Components.interfaces.nsIIOService);
+	//var iOService = Components.classes["@mozilla.org/network/io-service;1"]
+        //    .getService(Components.interfaces.nsIIOService);
 	
-	let channel = iOService.newChannelFromURI(cal.makeURL(url));
+        let channel = Services.io.newChannelFromURI(Services.io.newURI(url, null, null));
         let httpChannel = channel.QueryInterface(Components.interfaces.nsIHttpChannel);
         httpChannel.loadFlags |= Components.interfaces.nsIRequest.LOAD_BYPASS_CACHE;
 
@@ -1408,8 +1448,10 @@ CalDAVACLManager.prototype = {
 
     /* nsISupports */
     QueryInterface: function cDACLM_QueryInterface(aIID) {
-        return cal.doQueryInterface(this, CalDAVACLManager.prototype, aIID, null, this);
-    }
+        return doQueryInterface(this, CalDAVACLManager.prototype, aIID, null, this);
+     }
+    //QueryInterface: XPCOMUtils.generateQI([Components.interfaces.CalDAVACLManager])
+
 };
 
 function CalDAVAclCalendarEntry(calendar, manager) {
@@ -1546,9 +1588,9 @@ CalDAVAclCalendarEntry.prototype = {
 
     /* nsISupports */
     QueryInterface: function(aIID) {
-        return cal.doQueryInterface(this, null,
-                                    aIID, [Components.interfaces.calICalendarACLEntry],
-                                    null);
+      return doQueryInterface(this, null,
+                              aIID, [Components.interfaces.calICalendarACLEntry],
+                              null);
     }
 };
 
@@ -1593,12 +1635,13 @@ CalDAVAclItemEntry.prototype = {
                 || (this.userPrivileges.indexOf("{urn:inverse:params:xml:ns:inverse-dav}view-date-and-time") > -1));
     },
 
-    /* nsISupports */
-    QueryInterface: function(aIID) {
-        return cal.doQueryInterface(this, null,
-                                    aIID, [Components.interfaces.calIItemACLEntry],
-                                    null);
-    }
+  /* nsISupports */
+  //QueryInterface: XPCOMUtils.generateQI([Components.interfaces.calIItemACLEntry])
+  QueryInterface: function(aIID) {
+    return doQueryInterface(this, null,
+                            aIID, [Components.interfaces.calIItemACLEntry],
+                            null);
+  }
 };
 
 /** Module Registration */
