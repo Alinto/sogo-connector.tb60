@@ -1309,7 +1309,7 @@ CalDAVACLManager.prototype = {
         httpChannel.loadFlags |= Components.interfaces.nsIRequest.LOAD_BYPASS_CACHE;
 
         let callbacks = {
-            getInterface: cal.InterfaceRequestor_getInterface
+            getInterface: cal.provider.InterfaceRequestor_getInterface
         };
         httpChannel.notificationCallbacks = callbacks;
 

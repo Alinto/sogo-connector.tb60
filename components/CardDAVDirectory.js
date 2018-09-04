@@ -1,6 +1,6 @@
 /* CardDAVDirectory.js - This file is part of "SOGo Connector", a Thunderbird extension.
  *
- * Copyright: Inverse inc., 2006-2014
+ * Copyright: Inverse inc., 2006-2018
  *     Email: support@inverse.ca
  *       URL: http://inverse.ca
  *
@@ -543,17 +543,17 @@ CardDAVDirectory.prototype = {
     flags: 0,
 
     /* nsISupports */
-    //QueryInterface: function(aIID) {
-    //    if (!aIID.equals(Components.interfaces.nsIAbDirectory)
-    //        && !aIID.equals(Components.interfaces.nsISecurityCheckedComponent)
-    //        && !aIID.equals(Components.interfaces.nsIClassInfo)
-    //        && !aIID.equals(Components.interfaces.nsISupports)) {
-    //        dump("CardDAVDirectory.js: NO INTERFACE: "  + aIID + "\n");
-    //        throw Components.results.NS_ERROR_NO_INTERFACE;
-    //    }
-    //    return this;
-    //},
-    QueryInterface: XPCOMUtils.generateQI([Components.interfaces.CardDAVDirectory]),
+    QueryInterface: function(aIID) {
+        if (!aIID.equals(Components.interfaces.nsIAbDirectory)
+            && !aIID.equals(Components.interfaces.nsISecurityCheckedComponent)
+            && !aIID.equals(Components.interfaces.nsIClassInfo)
+            && !aIID.equals(Components.interfaces.nsISupports)) {
+            dump("CardDAVDirectory.js: NO INTERFACE: "  + aIID + "\n");
+            throw Components.results.NS_ERROR_NO_INTERFACE;
+        }
+        return this;
+    },
+    //QueryInterface: XPCOMUtils.generateQI([Components.interfaces.CardDAVDirectory]),
 
     /* additional */
     get serverURL() { 

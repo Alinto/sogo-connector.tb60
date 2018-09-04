@@ -15,7 +15,7 @@ function reloadCalendarCache(aCalendar) {
                    .wrappedJSObject);
         
         mgr.unregisterCalendar(aCalendar);
-        mgr.deleteCalendar(aCalendar);
+        mgr.removeCalendar(aCalendar);
 
         var newCal = mgr.createCalendar(aCalendar.type, aCalendar.uri);
         newCal.name = aCalendar.name;

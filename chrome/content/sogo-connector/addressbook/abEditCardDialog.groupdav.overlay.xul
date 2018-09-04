@@ -2,10 +2,9 @@
 	This overlay marks the card as edited so that at the next synchronization the new data will be uploaded	
 -->
 <!--
- Copyright:	Inverse inc., 2006 
- Author: 		Robert Bolduc
+ Copyright:	Inverse inc., 2006-2018
  Email:		support@inverse.ca 
- URL:			http://inverse.ca
+ URL:		http://inverse.ca
   
  This file is part of "SOGo Connector" a Thunderbird extension.
 
