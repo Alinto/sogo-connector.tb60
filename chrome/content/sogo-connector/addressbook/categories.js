@@ -61,13 +61,16 @@ let SCContactCategories = {
     },
 
     _sortArray: function SCCC__sortArray(catsArray) {
-        let localeService = Components.classes["@mozilla.org/intl/nslocaleservice;1"]
-                                      .getService(Components.interfaces.nsILocaleService);
-        let collator = Components.classes["@mozilla.org/intl/collation-factory;1"]
-                                 .getService(Components.interfaces.nsICollationFactory)
-                                 .CreateCollation(localeService.getApplicationLocale());
-        function compare(a, b) { return collator.compareString(0, a, b); }
-        catsArray.sort(compare);
+      //let localeService = Components.classes["@mozilla.org/intl/nslocaleservice;1"]
+      //                              .getService(Components.interfaces.nsILocaleService);
+      //let collator = Components.classes["@mozilla.org/intl/collation-factory;1"]
+      //                         .getService(Components.interfaces.nsICollationFactory)
+      //                         .CreateCollation(localeService.getApplicationLocale());
+      let collator = Components.classes["@mozilla.org/intl/collation-factory;1"]
+          .getService(Components.interfaces.nsICollationFactory)
+          .CreateCollation();
+      function compare(a, b) { return collator.compareString(0, a, b); }
+      catsArray.sort(compare);
     },
 
     setCategoriesAsArray: function SCCC_getCategoriesAsArray(catsArray) {
