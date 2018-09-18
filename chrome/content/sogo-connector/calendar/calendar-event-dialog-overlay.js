@@ -4,7 +4,7 @@ function SCOnLoad()
 {
     let item = window.calendarEvent;
 
-    if (item === null) {
+    if (typeof item == "undefined") {
 	// TODO: handle Thunderbird 52 with iframe options
 	return;
     }
