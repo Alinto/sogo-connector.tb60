@@ -24,8 +24,10 @@
 <!DOCTYPE overlay [
 <!ENTITY % dtd1 SYSTEM "chrome://sogo-connector/locale/addressbook/ca.inverse.abMainWindow.groupdav.dtd">
 <!ENTITY % dtd2 SYSTEM "chrome://sogo-connector/locale/addressbook/abEditCardDialog.groupdav.overlay.dtd">
+<!ENTITY % commonCardOverlayDTD SYSTEM "chrome://sogo-connector/locale/addressbook/common-card-overlay.dtd">
 %dtd1;
 %dtd2;
+%commonCardOverlayDTD;
 ]>
 
 <overlay id="ca.inverse.editcard.groupdav"
@@ -33,18 +35,16 @@
   <script
      type="application/x-javascript"
      src="chrome://sogo-connector/content/addressbook/abEditCardDialog.groupdav.overlay.js"/>
-  <tabs id="abTabs">
-    <!-- <tab label="&inverse.CalDAV.tab;"/> -->
-  </tabs>
 
+  <tabs id="abTabs">
+    <tab insertbefore="homeTabButton" id="categoriesTabButton" label="&sogo-connector.tabs.categories.label;"/>
+  </tabs>
   <tabpanels id="abTabPanels">
-    <!-- <vbox index="caldav" flex="1"> -->
-    <!--   <vbox id="inverse"> -->
-    <!--     <hbox flex="1"> -->
-    <!--       <label value="&inverse.FbUrl.label;" class="CardEditLabel"/> -->
-    <!--       <textbox id="FbUrl" flex="1"/> -->
-    <!--     </hbox> -->
-    <!--   </vbox> -->
-    <!-- </vbox> -->
+    <vbox id="abCategoriesTab" flex="0" style="max-height: 200px; overflow-y: auto;" insertbefore="abHomeTab">
+      <vbox id="abCategories">
+      </vbox>
+      <textbox id="abEmptyCategory" readonly="true"/>
+    </vbox>
   </tabpanels>
+
 </overlay>
