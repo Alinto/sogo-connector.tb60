@@ -391,7 +391,8 @@ CalDAVACLOfflineManager.prototype = {
             params.has_access_control = (entry.hasAccessControl ? 1 : 0);
             if (entry.hasAccessControl) {
                 // dump("has access control...\n");
-                params.user_privileges = this._serializeStringArray(entry.userPrivileges);
+                let serialized_user_privileges = this._serializeStringArray(entry.userPrivileges);
+                params.user_privileges = serialized_user_privileges;
                 //dump("PARSED userPrivileges: " +  params.user_privileges  + "\n");
 
                 // Some value examples:
@@ -409,7 +410,7 @@ CalDAVACLOfflineManager.prototype = {
                 //
                 if (cached_user_privileges != null &&
                     cached_user_privileges.indexOf("{urn:inverse:params:xml:ns:inverse-dav}") >=0 &&
-                    cached_user_privileges != params.user_privileges) {
+                    cached_user_privileges != serialized_user_privileges) {
                     entry.dirty = true;
                 }
 
@@ -1161,9 +1162,7 @@ CalDAVACLManager.prototype = {
 
         // We now remove every other caldav_ pref other than the ones we
         // use in our mail accounts.
-        let prefService = Components.classes["@mozilla.org/preferences-service;1"]
-                                    .getService(Components.interfaces.nsIPrefService);
-        let prefBranch = prefService.getBranch("mail.identity.");
+        let prefBranch = Services.prefs.getBranch("mail.identity.");
         let prefs = prefBranch.getChildList("", {});
         for (let pref of prefs) {
             if (pref.indexOf("caldav_") == 0) {
