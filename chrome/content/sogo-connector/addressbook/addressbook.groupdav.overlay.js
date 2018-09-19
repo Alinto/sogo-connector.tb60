@@ -1,7 +1,6 @@
 /* addressbook.groupdav.overlay.js - This file is part of "SOGo Connector", a Thunderbird extension.
  *
- * Copyright: Inverse inc., 2006-2010
- *    Author: Robert Bolduc, Wolfgang Sourdeau
+ * Copyright: Inverse inc., 2006-2018
  *     Email: support@inverse.ca
  *       URL: http://inverse.ca
  *
@@ -182,12 +181,12 @@ abDirTreeObserver.SCOnDrop = function(row, or, dataTransfer) {
         && isGroupdavDirectory(sourceDirectory.URI)) {
       if (dragSession.dragAction
           == Components.interfaces.nsIDragService.DRAGDROP_ACTION_MOVE) {
-        cards = this._getDroppedCardsKeysFromSession(dragSession, gAbView);
+        cards = this._getDroppedCardsKeysFromSession(gAbView, dataTransfer);
         for (let i = 0; i < cards.length; i++) {
           this._pushCardKey(cards[i], cardKeys);
         }
       }
-      this._resetDroppedCardsVersionFromSession(dragSession, gAbView, dataTransfer);
+      this._resetDroppedCardsVersionFromSession(gAbView, dataTransfer);
     }
 
     let proceed = true;
@@ -228,47 +227,24 @@ abDirTreeObserver.SCOnDrop = function(row, or, dataTransfer) {
   }
 };
 
-abDirTreeObserver._getDroppedCardsKeysFromSession = function(dragSession, abView) {
-  let cards = [];
-  let trans = Components.classes["@mozilla.org/widget/transferable;1"]
-      .createInstance(Components.interfaces.nsITransferable);
-  trans.init(null);
-  trans.addDataFlavor("moz/abcard");
-  trans.addDataFlavor("text/unicode");
-
-  for (let i = 0; i < dragSession.numDropItems; i++) {
-    dragSession.getData(trans, i);
-    let dataObj = new Object();
-    let bestFlavor = new Object();
-    let len = new Object();
-    try	{
-      trans.getAnyTransferData(bestFlavor, dataObj, len);
-      dataObj = dataObj.value.QueryInterface(Components.interfaces.nsISupportsString);
-      let transData = dataObj.data.split("\n");
-      let rows = transData[0].split(",");
-
-      for (let j = 0; j < rows.length; j++) {
-        let card = abView.getCardFromRow(rows[j]);
-        if (card) {
-          cards.push(card);
-        }
-      }
-      //dump("cards: " + cards.length + "\n");
-    }
-    catch (ex) {
-      dump("ex: " + ex + "\n");
-    }
-  }
-  return cards;
-};
-
-abDirTreeObserver._resetDroppedCardsVersionFromSession = function(dragSession, abView, dataTransfer) { 
+abDirTreeObserver._getDroppedCardsKeysFromSession = function(abView, dataTransfer) {
   var rows = dataTransfer.getData("moz/abcard").split(",").map(j => parseInt(j, 10));
   var numrows = rows.length;
   let cards = [];
 
   for (let j = 0; j < numrows; j++) {
-    cards.push(gAbView.getCardFromRow(rows[j]));
+    cards.push(abView.getCardFromRow(rows[j]));
+  }
+  return cards;
+};
+
+abDirTreeObserver._resetDroppedCardsVersionFromSession = function(abView, dataTransfer) {
+  var rows = dataTransfer.getData("moz/abcard").split(",").map(j => parseInt(j, 10));
+  var numrows = rows.length;
+  let cards = [];
+
+  for (let j = 0; j < numrows; j++) {
+    cards.push(abView.getCardFromRow(rows[j]));
   }
 
   for (let card of cards) {
