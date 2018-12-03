@@ -881,7 +881,7 @@ function deducePhotoTypeFromExt(photoName) {
 function photoFileFromName(photoName, inSOGoCache) {
     let file = Components.classes["@mozilla.org/file/directory_service;1"]
                          .getService(Components.interfaces.nsIProperties)
-                         .get("ProfD", Components.interfaces.nsILocalFile);
+                         .get("ProfD", Components.interfaces.nsIFile);
     file.append(inSOGoCache ? kPhotoImageCache : "Photos");
     if (photoName) {
         //dump("photoFileFromName() got photoName = " +photoName+ "\n");
