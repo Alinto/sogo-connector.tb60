@@ -1,5 +1,7 @@
 NEWS
 ====
+60.0.2  Fixed invitations dialog being always blank
+
 60.0.0  Thunderbird 60 support
 
 31.0.6  Fixed card editing from account preferences
