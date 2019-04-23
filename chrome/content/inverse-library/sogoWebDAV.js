@@ -370,7 +370,7 @@ sogoWebDAV.prototype = {
         else if (operation == "PROPFIND") {
             let headers = { "depth": (parameters.deep
                                       ? "1": "0"),
-                            "content-type": "application/xml; charset=utf8" };
+                            "content-type": "application/xml; charset=utf-8" };
             let query = this._propfindQuery(parameters.props);
             this._sendHTTPRequest(operation, query, headers);
         }
@@ -379,7 +379,7 @@ sogoWebDAV.prototype = {
                                       ? "1": "0"),
                             "Connection": "TE",
                             "TE": "trailers",
-                            "content-type": "application/xml; charset=utf8" };
+                            "content-type": "application/xml; charset=utf-8" };
             this._sendHTTPRequest(operation, parameters.query, headers);
         }
         else if (operation == "MKCOL") {
@@ -389,7 +389,7 @@ sogoWebDAV.prototype = {
             this._sendHTTPRequest(operation, parameters);
         }
         else if (operation == "PROPPATCH") {
-            let headers = { "content-type": "application/xml; charset=utf8" };
+            let headers = { "content-type": "application/xml; charset=utf-8" };
             this._sendHTTPRequest(operation, parameters, headers);
         }
         else if (operation == "OPTIONS") {
@@ -406,7 +406,7 @@ sogoWebDAV.prototype = {
     },
     post: function(data, contentType) {
         if (typeof(contentType) == "undefined") {
-            contentType = "application/xml; charset=utf8";
+            contentType = "application/xml; charset=utf-8";
         }
         this.load("POST", {data: data, contentType: contentType});
     },
